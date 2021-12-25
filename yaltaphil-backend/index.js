@@ -36,7 +36,7 @@ mongo.connect((err) => {
         // }
 
         res.send(
-       `<h1>This is my server users page</h1>
+            `<h1>This is my server users page</h1>
        <p>And I'd like to describe all users here: </p>
        <form action="/result" method="POST">
        <input type="text" name="name"/>
@@ -44,6 +44,15 @@ mongo.connect((err) => {
        </form>
        <a href="/exit">exit</a>`
         );
+    });
+    app.get("/add500", async (req, res) => {
+        for (let i = 0; i < 500; i++) {
+            mongo
+                .db("site-db")
+                .collection("users")
+                .insertOne({ name: `new user - ${i}`, role: "new player" });
+        }
+        res.send(`<h1>500 users added</h1>`);
     });
     app.post("/result", async (req, res) => {
         console.log(req.body.name);
