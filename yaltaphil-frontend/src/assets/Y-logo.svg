@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="50mm"
+   height="50mm"
+   viewBox="0 0 50 50"
+   version="1.1"
+   id="svg5"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs2">
+    <linearGradient
+       id="linearGradient121880">
+      <stop
+         style="stop-color:#d4ff2a;stop-opacity:1;"
+         offset="0"
+         id="stop121876" />
+      <stop
+         style="stop-color:#d4ff2a;stop-opacity:0;"
+         offset="1"
+         id="stop121878" />
+    </linearGradient>
+    <filter
+       style="color-interpolation-filters:sRGB"
+       id="filter120342"
+       x="-0.03869177"
+       y="-0.039081209"
+       width="1.0773835"
+       height="1.0781624">
+      <feGaussianBlur
+         stdDeviation="1.0092401"
+         id="feGaussianBlur120344" />
+    </filter>
+    <radialGradient
+       xlink:href="#linearGradient121880"
+       id="radialGradient121886"
+       cx="41.329109"
+       cy="54.909882"
+       fx="41.329109"
+       fy="54.909882"
+       r="33.723099"
+       gradientTransform="matrix(1,0,0,0.9907511,0,0.50785614)"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <g
+     id="layer1">
+    <path
+       style="opacity:0.51;fill:url(#radialGradient121886);fill-opacity:1;fill-rule:evenodd;stroke:#868489;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal;filter:url(#filter120342)"
+       id="path114182"
+       d="m 42.299465,54.597984 c 0.217993,0.54286 -0.624214,0.561678 -0.902268,0.362318 -0.75351,-0.540252 -0.432069,-1.663623 0.177633,-2.166854 1.090613,-0.900164 2.69961,-0.373165 3.43144,0.717583 1.073991,1.600717 0.318674,3.751877 -1.257534,4.696027 -2.100837,1.258402 -4.810215,0.266432 -5.960613,-1.797485 -1.447657,-2.597229 -0.21543,-5.871518 2.337436,-7.225199 3.091863,-1.639489 6.934504,-0.16516 8.489785,2.877386 1.832844,3.585536 0.115351,7.998543 -3.417337,9.754371 -4.078628,2.027173 -9.063284,0.06585 -11.018957,-3.957287 -2.22216,-4.571344 -0.01656,-10.128518 4.497238,-12.283543 5.063802,-2.417613 11.19411,0.03257 13.548129,5.037188 2.613407,5.556077 -0.08158,12.259972 -5.577139,14.812716 -6.048215,2.809459 -13.326042,-0.130512 -16.077301,-6.11709 -3.005712,-6.54025 0.179369,-14.392275 6.65704,-17.341888 7.032204,-3.20212 15.458639,0.228173 18.606473,7.196991 3.398656,7.524096 -0.27693,16.525109 -7.736941,19.87106 -8.015935,3.595293 -17.591667,-0.325652 -21.135646,-8.276892 -3.792015,-8.507733 0.374344,-18.658299 8.816843,-22.400232 8.999496,-3.988809 19.724991,0.42301 23.664818,9.356793 C 63.628226,57.205178 58.97091,68.505684 49.54582,72.643351 39.56288,77.025918 27.687293,72.123071 23.35183,62.206657 18.772316,51.732029 23.92072,39.2813 34.328475,34.748081 45.294773,29.971581 58.320695,35.365568 63.051637,46.264676 68.025156,57.72263 62.385566,71.323789 50.995091,76.252425 39.045497,81.42299 24.869059,75.537779 19.742756,63.655928 14.375118,51.214704 20.505967,36.462954 32.879204,31.139007 45.812046,25.574274 61.13914,31.950774 66.660711,44.815405 72.422559,58.239856 65.800394,74.142322 52.444362,79.861498 38.52831,85.820479 22.050448,78.952639 16.133683,65.105199 9.9775528,50.697553 17.091079,33.644273 31.429933,27.529934 46.329165,21.17664 63.957885,28.535861 70.269784,43.366134 76.820254,58.756947 69.21533,76.961124 53.893633,83.470572 38.011245,90.21823 19.231595,82.367596 12.52461,66.55447 5.5797526,50.180511 13.676104,30.825373 29.980662,23.92086"
+       transform="matrix(0.66066846,0,0,0.70127865,-1.7757935,-16.73744)" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:33.8667px;line-height:1.25;font-family:Oxford;-inkscape-font-specification:Oxford;letter-spacing:0px;word-spacing:0px;stroke-width:0.264583"
+       x="17.700863"
+       y="26.452108"
+       id="text2453"><tspan
+         id="tspan2451"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:33.8667px;font-family:Oxford;-inkscape-font-specification:Oxford;stroke-width:0.264583"
+         x="17.700863"
+         y="26.452108">Y</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.0726px;line-height:1.25;font-family:'Marquisette BTN Light';-inkscape-font-specification:'Marquisette BTN Light, ';letter-spacing:0px;word-spacing:0px;opacity:0.79;stroke-width:0.230679"
+       x="4.8430638"
+       y="51.853386"
+       id="text40423"
+       transform="scale(1.4615684,0.6841965)"><tspan
+         id="tspan40421"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.0726px;font-family:'Marquisette BTN Light';-inkscape-font-specification:'Marquisette BTN Light, ';stroke-width:0.230679"
+         x="4.8430638"
+         y="51.853386">yaltaphil</tspan></text>
+  </g>
+</svg>
