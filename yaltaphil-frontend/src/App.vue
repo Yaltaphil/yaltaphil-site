@@ -1,5 +1,5 @@
 ﻿<script setup>
-import portfolioItem from "./components/portfolio-item.vue";
+import PortfolioItem from "./components/PortfolioItem.vue";
 import {technologies} from "./assets/data/technologies";
 import {projects} from "./assets/data/projects";
 
@@ -13,13 +13,13 @@ function count() {
         class="
             min-w-full min-h-screen
             bg-gradient-to-b
-            from-gray-500
+            from-indigo-700
             via-slate-200
-            to-blue-400
-            overflow-hidden
+            to-green-400
+            pb-20
         "
     >
-        <div class="max-w-screen-lg mx-auto">
+        <div class="container max-w-5xl mx-auto px-2">
             <nav>
                 <div class="p-3">
                     <div class="flex items-center justify-between">
@@ -29,7 +29,7 @@ function count() {
                             src="/img/Y-logo.png"
                         />
 
-                        <div class="w-full md:flex md:justify-end">
+                        <div class="w-full flex justify-end">
                             <div
                                 class="
                                     flex flex-col
@@ -44,12 +44,12 @@ function count() {
                                         px-4
                                         py-2
                                         font-bold
-                                        text-gray-700
+                                        text-gray-900
                                         transition-colors
                                         duration-200
                                         transform
                                         rounded
-                                        hover:bg-indigo-300 hover:text-red-900
+                                       hover:bg-blue-700 hover:text-white
                                         md:mx-2
                                     "
                                     href="#about"
@@ -60,12 +60,12 @@ function count() {
                                         px-4
                                         py-2
                                         font-bold
-                                        text-gray-700
+                                        text-gray-900
                                         transition-colors
                                         duration-200
                                         transform
                                         rounded
-                                        hover:bg-indigo-300 hover:text-red-900
+                                       hover:bg-blue-700 hover:text-white
                                         md:mx-2
                                     "
                                     href="#portfolio"
@@ -76,12 +76,12 @@ function count() {
                                         px-4
                                         py-2
                                         font-bold
-                                        text-gray-700
+                                        text-gray-900
                                         transition-colors
                                         duration-200
                                         transform
                                         rounded
-                                        hover:bg-indigo-300 hover:text-red-900
+                                        hover:bg-blue-700 hover:text-white
                                         md:mx-2
                                     "
                                     href="#contacts"
@@ -93,27 +93,26 @@ function count() {
                 </div>
             </nav>
 
-
-            <section class="px-4">
+            <section>
                 <h2
                     id="about"
-                    class="text-black font-sans text-4xl font-light m-8 mt-12 md:mt-16 text-center"
+                    class="text-black font-sans text-4xl font-light my-12 md:mt-24 text-center"
                 >
                     About me
                 </h2>
                 <div class="md:flex">
                     <div>
-                        <img alt="My photo" class="mx-auto object-cover w-64 rounded-lg"
+                        <img alt="My photo" class="mx-auto object-cover w-64 rounded-lg shadow-lg"
                              src="/img/yaltaphil.jpg">
                     </div>
-                    <div class="p-4 md:px-8">
-                        <p class="block mt-1 text-xl text-center font-medium text-black"> Hi there, I'm Phil 👋 and
+                    <div class="p-4 md:p-12">
+                        <p class="block text-xl text-center font-medium text-black"> Hi there, I'm Phil 👋 and
                             I do frontend development. I
                             really enjoy learning languages and frameworks like Vue and
                             Nuxt, as well as vanilla Javascript.</p>
                     </div>
                 </div>
-                <p class="text-black text-center font-light my-8">
+                <p class="text-black text-center font-light m-8">
                     Github profile:
                     <a class="py-5 text-red-700 font-bold" href="https://github.com/yaltaphil"
                        target="_blank"
@@ -122,15 +121,15 @@ function count() {
                 </p>
             </section>
 
-            <section class="">
-                <h2 class="text-black font-sans text-4xl font-light m-8 md:mt-16 text-center">
+            <section>
+                <h2 class="text-black font-sans text-4xl font-light my-12 md:mt-24 text-center">
                     My current technology stack:
                 </h2>
                 <div class="flex flex-row flex-wrap
                     justify-center
                     gap-12">
                     <div v-for="(tech, i) in technologies" :key="i"
-                         class="p-4 rounded-full bg-zinc-200 bg-opacity-25 hover:animate-pulse">
+                         class="p-4 rounded-full bg-zinc-200 bg-opacity-25 hover:animate-pulse hover:shadow-xl">
                         <img :src="tech.logo" alt="icon" class="w-12 h-12"/>
                     </div>
                 </div>
@@ -151,7 +150,7 @@ function count() {
                     md:p-4
                 "
                 >
-                    <portfolio-item
+                    <PortfolioItem
                         v-for="(item, i) in projects"
                         :key="i"
                         :item="item"
@@ -159,20 +158,20 @@ function count() {
                 </div>
             </section>
 
-            <section class="md:p-8">
+            <section>
                 <h2
                     id="contacts"
-                    class="text-black font-sans text-5xl font-light m-8 mt-12 md:mt-24 text-center"
+                    class="text-black font-sans text-4xl font-light my-12 md:mt-24 text-center"
                 >
                     Contact info
                 </h2>
                 <p class="text-black font-sans font-light m-1 text-center">Feel free to contact me via email or
                     telegram </p>
                 <div class="flex flex-wrap justify-around">
-                    <p class="py-8 px-4 text-red-700 font-bold">email:
+                    <p class="p-4 text-red-700 font-bold text-center">email:
                         <a href="mailto:yaltaphil@gmail.com">yaltaphil@gmail.com</a>
                     </p>
-                    <p class="py-8 px-4 text-red-700 font-bold">
+                    <p class="p-4 text-red-700 font-bold text-center">
                         telegram:
                         <a href="https://t.me/Yaltaphil" target="_blank"
                         >https://t.me/Yaltaphil</a

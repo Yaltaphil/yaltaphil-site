@@ -18,4 +18,9 @@ export const projects = [{
     description: "Cinema site and it's admin panel. Written on Vue 2 and bootstrap admin-lte. Google Firebase used as a backend.",
     picture: "/img/portfolio/kinocms.jpg",
     link: "https://kinocms.yaltaphil.ru",
+}, {
+    title: "TODO application",
+    description: "Simple todo list application with local data storage.",
+    picture: "/img/portfolio/todo.jpg",
+    link: "https://todo.yaltaphil.ru",
 }];
