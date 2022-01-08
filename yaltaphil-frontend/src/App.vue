@@ -100,25 +100,29 @@ function count() {
                 >
                     About me
                 </h2>
-                <div class="md:flex">
-                    <div>
-                        <img alt="My photo" class="mx-auto object-cover w-64 rounded-lg shadow-lg"
+                <div class="sm:flex flex-row-reverse">
+                    <div class="flex-auto mx-auto rounded-lg shadow-lg overflow-hidden">
+                        <img alt="My photo" class="w-full h-full object-cover pan-image-top-right "
                              src="/img/yaltaphil.jpg">
                     </div>
                     <div class="p-4 md:p-12">
                         <p class="block text-xl text-center font-medium text-black"> Hi there, I'm Phil 👋 and
                             I do frontend development. I
                             really enjoy learning languages and frameworks like Vue and
-                            Nuxt, as well as vanilla Javascript.</p>
+                            Nuxt, as well as vanilla Javascript. </p>
+                        <p class="block text-xl text-center font-medium text-black">I'm looking for cooperation of any
+                            kind in frontend development, freelancing or full-time
+                            remote work on your projects. </p>
+                        <p class="text-black text-center font-light m-8">
+                            Github profile:
+                            <a class="py-5 text-red-700 font-bold" href="https://github.com/yaltaphil"
+                               target="_blank"
+                            >https://github.com/yaltaphil</a
+                            >
+                        </p>
                     </div>
                 </div>
-                <p class="text-black text-center font-light m-8">
-                    Github profile:
-                    <a class="py-5 text-red-700 font-bold" href="https://github.com/yaltaphil"
-                       target="_blank"
-                    >https://github.com/yaltaphil</a
-                    >
-                </p>
+
             </section>
 
             <section>
@@ -182,3 +186,25 @@ function count() {
         </div>
     </main>
 </template>
+
+<style>
+.pan-image-top-right {
+    animation: pan-image 18s cubic-bezier(0.215, 0.610, 0.355, 1.000) infinite;
+}
+
+@keyframes pan-image {
+    0% {
+        transform: scale(1) translate(0, 0);
+        transform-origin: 84% 16%;
+    }
+    50% {
+        transform: scale(1.25) translate(20px, -15px);
+        transform-origin: right top;
+    }
+    100% {
+        transform: scale(1) translate(0, 0);
+        transform-origin: 84% 16%;
+    }
+}
+
+</style>
