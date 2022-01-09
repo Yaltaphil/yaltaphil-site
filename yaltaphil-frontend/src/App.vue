@@ -2,10 +2,11 @@
 import PortfolioItem from "./components/PortfolioItem.vue";
 import {technologies} from "./assets/data/technologies";
 import {projects} from "./assets/data/projects";
+import {computed} from "vue";
 
-function count() {
-    return projects.length;
-}
+const projectsQuantity = computed(() => projects.length)
+// const technologiesQuantity = computed(() => technologies.length)
+
 </script>
 
 <template>
@@ -69,7 +70,7 @@ function count() {
                                         md:mx-2
                                     "
                                     href="#portfolio"
-                                >Portfolio: {{ count() }} items</a
+                                >Portfolio: {{ projectsQuantity }} items</a
                                 >
                                 <a
                                     class="
