@@ -119,8 +119,8 @@ const projectsQuantity = computed(() => projects.length)
                             kind in frontend development, freelancing or full-time
                             remote work on your projects. </p>
                         <p class="text-black text-center font-light m-8">
-                            Github profile:
-                            <a class="py-5 text-red-700 font-bold" href="https://github.com/yaltaphil"
+                            <img alt="" class="inline h-6 px-2" src="/img/icons/github.svg"/>
+                            <a class="py-5 text-red-900 font-bold" href="https://github.com/yaltaphil"
                                target="_blank"
                             >https://github.com/yaltaphil</a
                             >
@@ -177,11 +177,12 @@ const projectsQuantity = computed(() => projects.length)
                 <p class="text-black font-sans font-light m-1 text-center">Feel free to contact me via email or
                     telegram </p>
                 <div class="flex flex-wrap justify-around">
-                    <p class="p-4 text-red-700 font-bold text-center">email:
+                    <p class="p-4 text-red-900 font-bold text-center">
+                        <img alt="" class="inline h-6 pr-2" src="/img/icons/email.svg"/>
                         <a href="mailto:yaltaphil@gmail.com">yaltaphil@gmail.com</a>
                     </p>
-                    <p class="p-4 text-red-700 font-bold text-center">
-                        telegram:
+                    <p class="p-4 text-red-900 font-bold text-center">
+                        <img alt="" class="inline h-6 pr-2" src="/img/icons/telegram.svg"/>
                         <a href="https://t.me/Yaltaphil" target="_blank"
                         >https://t.me/Yaltaphil</a
                         >
