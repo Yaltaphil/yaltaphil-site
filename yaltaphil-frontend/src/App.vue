@@ -1,4 +1,4 @@
-﻿<script setup>
+﻿<script lang="ts" setup>
 import PortfolioItem from "./components/PortfolioItem.vue";
 import {technologies} from "./assets/data/technologies";
 import {projects} from "./assets/data/projects";
@@ -34,15 +34,13 @@ const projectsQuantity = computed(() => projects.length)
                             <div
                                 class="
                                     flex flex-col
-                                    px-2
-                                    py-3
-                                    -mx-4
-                                    md:flex-row md:mx-0 md:py-0
+                                    p-3
+                                    md:flex-row
                                 "
                             >
                                 <a
                                     class="
-                                        px-4
+                                        px-3
                                         py-2
                                         font-bold
                                         text-gray-900
@@ -50,15 +48,17 @@ const projectsQuantity = computed(() => projects.length)
                                         duration-200
                                         transform
                                         rounded
-                                       hover:bg-blue-700 hover:text-white
+                                        hover:bg-blue-700 hover:text-white
                                         md:mx-2
                                     "
                                     href="#about"
-                                >About me</a
                                 >
+                                    <img alt="" class="inline h-6" src="/img/icons/info.svg"/>
+                                    About me
+                                </a>
                                 <a
                                     class="
-                                        px-4
+                                        px-3
                                         py-2
                                         font-bold
                                         text-gray-900
@@ -70,11 +70,13 @@ const projectsQuantity = computed(() => projects.length)
                                         md:mx-2
                                     "
                                     href="#portfolio"
-                                >Portfolio: {{ projectsQuantity }} items</a
+                                >
+                                    <img alt="" class="inline h-6" src="/img/icons/portfolio.svg"/>
+                                    Portfolio: {{ projectsQuantity }} items</a
                                 >
                                 <a
                                     class="
-                                        px-4
+                                        px-3
                                         py-2
                                         font-bold
                                         text-gray-900
@@ -86,7 +88,9 @@ const projectsQuantity = computed(() => projects.length)
                                         md:mx-2
                                     "
                                     href="#contacts"
-                                >Contact</a
+                                >
+                                    <img alt="" class="inline h-6" src="/img/icons/contact.svg"/>
+                                    Contact</a
                                 >
                             </div>
                         </div>
