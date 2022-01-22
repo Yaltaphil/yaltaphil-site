@@ -2,10 +2,21 @@
 import PortfolioItem from "./components/PortfolioItem.vue";
 import {technologies} from "./assets/data/technologies";
 import {projects} from "./assets/data/projects";
-import {computed} from "vue";
+import {computed, ComputedRef, onMounted, onUnmounted, Ref, ref} from "vue";
 
-const projectsQuantity = computed(() => projects.length)
+const projectsQuantity: ComputedRef<Number> = computed((): Number => projects.length)
 // const technologiesQuantity = computed(() => technologies.length)
+
+const counter: Ref<Number> = ref(0);
+let counterId: Number;
+
+onMounted(() => startCounter());
+
+onUnmounted(() => clearInterval(counterId));
+
+const startCounter = (): void => {
+    counterId = setInterval(() => counter.value++, 1000);
+}
 
 </script>
 
@@ -20,6 +31,8 @@ const projectsQuantity = computed(() => projects.length)
             pb-20
         "
     >
+
+        <button class="counter-button">{{ counter }} s</button>
         <div class="container max-w-5xl mx-auto px-2">
             <nav>
                 <div class="p-3">
@@ -174,15 +187,15 @@ const projectsQuantity = computed(() => projects.length)
                 >
                     Contact info
                 </h2>
-                <p class="text-black font-sans font-light m-1 text-center">Feel free to contact me via email or
+                <p class="text-black font-sans font-light my-3 text-center">Feel free to contact me via email or
                     telegram </p>
-                <div class="flex flex-wrap justify-around">
-                    <p class="p-4 text-red-900 font-bold text-center">
-                        <img alt="" class="inline h-6 pr-2" src="/img/icons/email.svg"/>
+                <div class="flex flex-wrap justify-around my-8">
+                    <p class="p-6 text-red-900 font-bold text-center">
+                        <img alt="email icon" class="inline w-12 h-12 mr-3" src="/img/icons/email.svg"/>
                         <a href="mailto:yaltaphil@gmail.com">yaltaphil@gmail.com</a>
                     </p>
-                    <p class="p-4 text-red-900 font-bold text-center">
-                        <img alt="" class="inline h-6 pr-2" src="/img/icons/telegram.svg"/>
+                    <p class="m-4 text-red-900 font-bold text-center">
+                        <img alt="telegram icon" class="inline w-12 h-12 mr-3" src="/img/icons/telegram.svg"/>
                         <a href="https://t.me/Yaltaphil" target="_blank"
                         >https://t.me/Yaltaphil</a
                         >
@@ -190,6 +203,7 @@ const projectsQuantity = computed(() => projects.length)
                 </div>
             </section>
         </div>
+        <footer class="text-xs text-center">&copy; 2022</footer>
     </main>
 </template>
 

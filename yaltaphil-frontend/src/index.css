@@ -1,3 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.counter-button {
+    @apply text-amber-300 text-sm ml-auto px-5 py-1 block border border-amber-100 rounded-bl-3xl bg-fuchsia-700;
+}
