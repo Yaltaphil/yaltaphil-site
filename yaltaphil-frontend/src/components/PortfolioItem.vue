@@ -1,8 +1,12 @@
-<script setup>
-defineProps({
-    item: Object,
-});
+<script lang="ts" setup>
+import IProject from '../models/IProject'
+import { defineProps } from 'vue'
 
+interface Props {
+  item: IProject
+}
+
+const { item } = defineProps<Props>()
 </script>
 
 <template>

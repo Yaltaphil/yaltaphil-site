@@ -1,21 +1,21 @@
 ﻿<script lang="ts" setup>
-import PortfolioItem from "./components/PortfolioItem.vue";
-import {technologies} from "./assets/data/technologies";
-import {projects} from "./assets/data/projects";
-import {computed, ComputedRef, onMounted, onUnmounted, Ref, ref} from "vue";
+import PortfolioItem from './components/PortfolioItem.vue'
+import { technologies } from './assets/data/technologies'
+import { projects } from './assets/data/projects'
+import { computed, ComputedRef, onMounted, onUnmounted, Ref, ref } from 'vue'
 
 const projectsQuantity: ComputedRef<Number> = computed((): Number => projects.length)
 // const technologiesQuantity = computed(() => technologies.length)
 
-const counter: Ref<Number> = ref(0);
-let counterId: Number;
+const counter: Ref<Number> = ref(0)
+let counterId: Number
 
-onMounted(() => startCounter());
+onMounted(() => startCounter())
 
-onUnmounted(() => clearInterval(counterId));
+onUnmounted(() => clearInterval(counterId))
 
 const startCounter = (): void => {
-    counterId = setInterval(() => counter.value++, 1000);
+  counterId = setInterval(() => counter.value++, 1000)
 }
 
 </script>
