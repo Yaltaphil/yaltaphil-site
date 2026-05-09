@@ -3,10 +3,11 @@ import { ref } from 'vue'
 import { useIntersectionObserver } from '@/composables/useIntersectionObserver'
 
 const certificates = [
-  '/img/sertificates/1.jpg',
-  '/img/sertificates/2.png',
-  '/img/sertificates/3.jpg',
-  '/img/sertificates/4.png',
+  { webp: '/img/sertificates/1.webp',                    alt: 'Certificate 1' },
+  { webp: '/img/sertificates/2.webp',                    alt: 'Certificate 2' },
+  { webp: '/img/sertificates/3.webp',                    alt: 'Certificate 3' },
+  { webp: '/img/sertificates/4.webp',                    alt: 'Certificate 4' },
+  { webp: '/img/sertificates/Javascript-certificate.webp', alt: 'JavaScript Certificate' },
 ]
 
 const selected = ref<string | null>(null)
@@ -30,16 +31,22 @@ function close() { selected.value = null }
 
       <div
         ref="grid"
-        :class="['grid grid-cols-2 md:grid-cols-4 gap-4', { 'section-visible': gridVisible }]"
+        :class="['grid grid-cols-2 md:grid-cols-5 gap-4', { 'section-visible': gridVisible }]"
       >
         <button
-          v-for="(src, i) in certificates"
+          v-for="(cert, i) in certificates"
           :key="i"
-          @click="open(src)"
+          @click="open(cert.webp)"
           class="stagger-item rounded-xl overflow-hidden shadow-md hover:shadow-xl hover:scale-105 transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           :style="{ '--delay': `${i * 0.1}s` }"
         >
-          <img :src="src" :alt="`Certificate ${i + 1}`" class="w-full h-48 object-cover object-top" />
+          <img
+            :src="cert.webp"
+            :alt="cert.alt"
+            loading="lazy"
+            decoding="async"
+            class="w-full h-40 object-cover object-top"
+          />
         </button>
       </div>
 
@@ -60,7 +67,11 @@ function close() { selected.value = null }
           >
             ✕ Close
           </button>
-          <img :src="selected" alt="Certificate" class="w-full rounded-xl shadow-2xl" />
+          <img
+            :src="selected"
+            alt="Certificate"
+            class="w-full rounded-xl shadow-2xl"
+          />
         </div>
       </div>
     </Transition>
