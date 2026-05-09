@@ -7,17 +7,7 @@ export class UsersController {
 
   @Get()
   @Header('Content-Type', 'text/html')
-  async getRoot(): Promise<string> {
-    const users = await this.usersService.findAll()
-    const rows = users.map(u => `
-      <tr id="row-${u._id}">
-        <td>${u.name}</td>
-        <td>${u.role}</td>
-        <td>
-          <button onclick="deleteUser('${u._id}')">Delete</button>
-        </td>
-      </tr>`).join('')
-
+  getRoot(): string {
     return `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><title>Users</title>
@@ -31,22 +21,46 @@ export class UsersController {
 </style>
 </head>
 <body>
-  <h1>Users (${users.length})</h1>
+  <h1 id="title">Users</h1>
   <div class="actions">
-    <a href="/add5"><button>+ Add 5 random</button></a>
-    <a href="/clear"><button>🗑 Clear all</button></a>
+    <button onclick="addRandom()">+ Add 5 random</button>
+    <button onclick="clearAll()">🗑 Clear all</button>
   </div>
   <table>
     <thead><tr><th>Name</th><th>Role</th><th></th></tr></thead>
-    <tbody id="tbody">${rows}</tbody>
+    <tbody id="tbody"></tbody>
   </table>
   <script>
+    async function loadUsers() {
+      const users = await fetch('/users').then(r => r.json())
+      document.getElementById('title').textContent = 'Users (' + users.length + ')'
+      document.getElementById('tbody').innerHTML = users.map(u =>
+        '<tr id="row-' + u._id + '">' +
+          '<td>' + u.name + '</td>' +
+          '<td>' + u.role + '</td>' +
+          '<td><button onclick="deleteUser(\\'' + u._id + '\\')">Delete</button></td>' +
+        '</tr>'
+      ).join('')
+    }
+
+    async function addRandom() {
+      await fetch('/add5')
+      await loadUsers()
+    }
+
+    async function clearAll() {
+      await fetch('/clear')
+      await loadUsers()
+    }
+
     async function deleteUser(id) {
       await fetch('/users/' + id, { method: 'DELETE' })
       document.getElementById('row-' + id).remove()
-      const h = document.querySelector('h1')
-      h.textContent = 'Users (' + document.querySelectorAll('#tbody tr').length + ')'
+      const count = document.querySelectorAll('#tbody tr').length
+      document.getElementById('title').textContent = 'Users (' + count + ')'
     }
+
+    loadUsers()
   </script>
 </body>
 </html>`
@@ -59,10 +73,9 @@ export class UsersController {
   }
 
   @Get('clear')
-  @Header('Content-Type', 'text/html')
-  async clear(): Promise<string> {
-    const count = await this.usersService.clearAll()
-    return `<h1>Deleted ${count} users. <a href="/">Back</a></h1>`
+  async clear() {
+    const deleted = await this.usersService.clearAll()
+    return { deleted }
   }
 
   @Get('users')
