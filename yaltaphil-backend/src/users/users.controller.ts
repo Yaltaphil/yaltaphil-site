@@ -12,19 +12,24 @@ export class UsersController {
 <html>
 <head><meta charset="utf-8"><title>Users</title>
 <style>
-  body { font-family: sans-serif; padding: 24px; }
-  table { border-collapse: collapse; width: 100%; max-width: 600px; margin-top: 16px; }
-  th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
-  th { background: #f5f5f5; }
-  button { cursor: pointer; }
+  body { font-family: sans-serif; padding: 24px; background: #f9fafb; }
+  table { border-collapse: collapse; width: 100%; max-width: 600px; margin-top: 16px; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  th, td { border-bottom: 1px solid #e5e7eb; padding: 10px 14px; text-align: left; }
+  th { background: #f3f4f6; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: #6b7280; }
+  tr:last-child td { border-bottom: none; }
   .actions { display: flex; gap: 8px; margin-bottom: 16px; }
+  button { cursor: pointer; border: none; border-radius: 6px; padding: 8px 16px; font-size: 14px; font-weight: 500; transition: opacity .15s; }
+  button:hover { opacity: .85; }
+  .btn-add  { background: #4f46e5; color: #fff; }
+  .btn-clear { background: #ef4444; color: #fff; }
+  .btn-del  { background: #fee2e2; color: #b91c1c; padding: 4px 10px; font-size: 12px; }
 </style>
 </head>
 <body>
   <h1 id="title">Users</h1>
   <div class="actions">
-    <button onclick="addRandom()">+ Add 5 random</button>
-    <button onclick="clearAll()">🗑 Clear all</button>
+    <button class="btn-add" onclick="addRandom()">+ Add 5 random</button>
+    <button class="btn-clear" onclick="clearAll()">🗑 Clear all</button>
   </div>
   <table>
     <thead><tr><th>Name</th><th>Role</th><th></th></tr></thead>
@@ -38,7 +43,7 @@ export class UsersController {
         '<tr id="row-' + u._id + '">' +
           '<td>' + u.name + '</td>' +
           '<td>' + u.role + '</td>' +
-          '<td><button onclick="deleteUser(\\'' + u._id + '\\')">Delete</button></td>' +
+          '<td><button class="btn-del" onclick="deleteUser(\\'' + u._id + '\\')">Delete</button></td>' +
         '</tr>'
       ).join('')
     }
