@@ -28,10 +28,10 @@
         <!-- Text -->
         <div class="text-center md:text-left">
 
-          <!-- Status badge -->
-          <div class="inline-flex items-center gap-2 bg-green-400/15 border border-green-400/30 rounded-full px-4 py-1.5 text-sm text-green-300 font-medium mb-5 hero-animate" style="--delay: 0.15s">
-            <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            Available for work
+          <!-- Role badge -->
+          <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-sm text-white/80 font-medium mb-5 hero-animate" style="--delay: 0.15s">
+            <span class="text-base">⚡</span>
+            Frontend Developer
           </div>
 
           <p class="text-indigo-200 text-lg font-medium mb-1 dark:text-indigo-400 hero-animate" style="--delay: 0.28s">
