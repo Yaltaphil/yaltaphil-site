@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Header, Post } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Header, HttpCode, NotFoundException, Param, Patch, Post } from '@nestjs/common'
 import { UsersService } from './users.service'
 
 @Controller()
@@ -16,6 +16,38 @@ export class UsersController {
       </form>
       <p><a href="/add500">Add 500 test users</a></p>
     `
+  }
+
+  @Get('users')
+  async getUsers() {
+    return this.usersService.findAll()
+  }
+
+  @Post('users')
+  @HttpCode(201)
+  async createUser(@Body() body: { name: string; role: string }) {
+    return this.usersService.addOne(body.name, body.role)
+  }
+
+  @Get('users/:id')
+  async getUser(@Param('id') id: string) {
+    const user = await this.usersService.findById(id)
+    if (!user) throw new NotFoundException()
+    return user
+  }
+
+  @Patch('users/:id')
+  async updateUser(@Param('id') id: string, @Body() body: { name?: string; role?: string }) {
+    const user = await this.usersService.updateOne(id, body)
+    if (!user) throw new NotFoundException()
+    return user
+  }
+
+  @Delete('users/:id')
+  @HttpCode(204)
+  async deleteUser(@Param('id') id: string) {
+    const deleted = await this.usersService.deleteOne(id)
+    if (!deleted) throw new NotFoundException()
   }
 
   @Get('add500')
