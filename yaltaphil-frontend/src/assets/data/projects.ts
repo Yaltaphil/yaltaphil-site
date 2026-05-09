@@ -2,6 +2,15 @@ import type IProject from '@/models/IProject'
 
 export const projects: IProject[] = [
   {
+    title: 'Матрёшка ТВ',
+    description: 'Russian video platform — a home for video creators and their communities.',
+    picture: '/img/portfolio/matreshka.webp',
+    link: 'https://matreshka.tv',
+    tags: ['Nuxt', 'Vue', 'TypeScript'],
+    role: 'Frontend Dev',
+    year: 2024,
+  },
+  {
     title: 'DOIT gaming portal',
     description: 'Gaming portal prototype project with custom design features.',
     picture: '/img/portfolio/doit1.jpg',
