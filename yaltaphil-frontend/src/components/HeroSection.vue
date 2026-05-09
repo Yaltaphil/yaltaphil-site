@@ -38,7 +38,7 @@
             Hello, I'm
           </p>
           <h1 class="text-5xl md:text-6xl font-extrabold text-white mb-4 leading-tight tracking-tight hero-animate" style="--delay: 0.38s">
-            Phil Ryazankin
+            Philip Ryazankin
           </h1>
           <p class="text-lg text-white/75 mb-8 max-w-md dark:text-white/65 hero-animate" style="--delay: 0.52s">
             Frontend developer focused on Vue&nbsp;&amp;&nbsp;Nuxt. I enjoy building fast, clean, and interactive web experiences.
