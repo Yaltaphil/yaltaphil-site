@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Header, HttpCode, NotFoundException, Param, Patch, Post } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Header, HttpCode, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common'
 import { UsersService } from './users.service'
 
 @Controller()
@@ -23,10 +23,20 @@ export class UsersController {
   .btn-add  { background: #4f46e5; color: #fff; }
   .btn-clear { background: #ef4444; color: #fff; }
   .btn-del  { background: #fee2e2; color: #b91c1c; padding: 4px 10px; font-size: 12px; }
+  .search { display: flex; gap: 8px; margin-bottom: 16px; max-width: 600px; }
+  .search input { flex: 1; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; outline: none; }
+  .search input:focus { border-color: #4f46e5; box-shadow: 0 0 0 2px #e0e7ff; }
+  .btn-search { background: #0ea5e9; color: #fff; }
+  .btn-reset { background: #e5e7eb; color: #374151; }
 </style>
 </head>
 <body>
   <h1 id="title">Users</h1>
+  <div class="search">
+    <input id="query" type="text" placeholder="Search by name..." onkeydown="if(event.key==='Enter') search()" />
+    <button class="btn-search" onclick="search()">Find</button>
+    <button class="btn-reset" onclick="reset()">Reset</button>
+  </div>
   <div class="actions">
     <button class="btn-add" onclick="addRandom()">+ Add 5 random</button>
     <button class="btn-clear" onclick="clearAll()">🗑 Clear all</button>
@@ -36,9 +46,11 @@ export class UsersController {
     <tbody id="tbody"></tbody>
   </table>
   <script>
-    async function loadUsers() {
-      const users = await fetch('/users').then(r => r.json())
-      document.getElementById('title').textContent = 'Users (' + users.length + ')'
+    async function loadUsers(name) {
+      const url = name ? '/users?name=' + encodeURIComponent(name) : '/users'
+      const users = await fetch(url).then(r => r.json())
+      const label = name ? 'Results for "' + name + '": ' + users.length : 'Users (' + users.length + ')'
+      document.getElementById('title').textContent = label
       document.getElementById('tbody').innerHTML = users.map(u =>
         '<tr id="row-' + u._id + '">' +
           '<td>' + u.name + '</td>' +
@@ -48,14 +60,25 @@ export class UsersController {
       ).join('')
     }
 
+    function search() {
+      const q = document.getElementById('query').value.trim()
+      if (q) loadUsers(q)
+    }
+
+    function reset() {
+      document.getElementById('query').value = ''
+      loadUsers()
+    }
+
     async function addRandom() {
       await fetch('/add5')
-      await loadUsers()
+      loadUsers(document.getElementById('query').value.trim() || undefined)
     }
 
     async function clearAll() {
       await fetch('/clear')
-      await loadUsers()
+      document.getElementById('query').value = ''
+      loadUsers()
     }
 
     async function deleteUser(id) {
@@ -84,7 +107,8 @@ export class UsersController {
   }
 
   @Get('users')
-  async getUsers() {
+  async getUsers(@Query('name') name?: string) {
+    if (name) return this.usersService.findByName(name)
     return this.usersService.findAll()
   }
 
