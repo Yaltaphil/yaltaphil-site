@@ -7,15 +7,62 @@ export class UsersController {
 
   @Get()
   @Header('Content-Type', 'text/html')
-  getRoot(): string {
-    return `
-      <h1>Server is running</h1>
-      <form action="/result" method="POST">
-        <input type="text" name="name" placeholder="Search user..." />
-        <button>Search</button>
-      </form>
-      <p><a href="/add500">Add 500 test users</a></p>
-    `
+  async getRoot(): Promise<string> {
+    const users = await this.usersService.findAll()
+    const rows = users.map(u => `
+      <tr id="row-${u._id}">
+        <td>${u.name}</td>
+        <td>${u.role}</td>
+        <td>
+          <button onclick="deleteUser('${u._id}')">Delete</button>
+        </td>
+      </tr>`).join('')
+
+    return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Users</title>
+<style>
+  body { font-family: sans-serif; padding: 24px; }
+  table { border-collapse: collapse; width: 100%; max-width: 600px; margin-top: 16px; }
+  th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+  th { background: #f5f5f5; }
+  button { cursor: pointer; }
+  .actions { display: flex; gap: 8px; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+  <h1>Users (${users.length})</h1>
+  <div class="actions">
+    <a href="/add5"><button>+ Add 5 random</button></a>
+    <a href="/clear"><button>🗑 Clear all</button></a>
+  </div>
+  <table>
+    <thead><tr><th>Name</th><th>Role</th><th></th></tr></thead>
+    <tbody id="tbody">${rows}</tbody>
+  </table>
+  <script>
+    async function deleteUser(id) {
+      await fetch('/users/' + id, { method: 'DELETE' })
+      document.getElementById('row-' + id).remove()
+      const h = document.querySelector('h1')
+      h.textContent = 'Users (' + document.querySelectorAll('#tbody tr').length + ')'
+    }
+  </script>
+</body>
+</html>`
+  }
+
+  @Get('add5')
+  async add5() {
+    await this.usersService.addRandom(5)
+    return { added: 5 }
+  }
+
+  @Get('clear')
+  @Header('Content-Type', 'text/html')
+  async clear(): Promise<string> {
+    const count = await this.usersService.clearAll()
+    return `<h1>Deleted ${count} users. <a href="/">Back</a></h1>`
   }
 
   @Get('users')
@@ -48,13 +95,6 @@ export class UsersController {
   async deleteUser(@Param('id') id: string) {
     const deleted = await this.usersService.deleteOne(id)
     if (!deleted) throw new NotFoundException()
-  }
-
-  @Get('add500')
-  @Header('Content-Type', 'text/html')
-  async add500(): Promise<string> {
-    await this.usersService.addMany(500)
-    return '<h1>500 users added</h1>'
   }
 
   @Post('result')
