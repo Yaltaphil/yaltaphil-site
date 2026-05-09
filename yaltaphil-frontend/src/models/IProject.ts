@@ -5,4 +5,5 @@ export default interface IProject {
   link: string
   tags?: string[]
   year?: number
+  role?: string  // e.g. 'Frontend Dev', 'Team Lead' — omit for solo projects
 }
