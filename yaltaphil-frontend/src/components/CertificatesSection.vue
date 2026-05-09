@@ -3,11 +3,11 @@ import { ref } from 'vue'
 import { useIntersectionObserver } from '@/composables/useIntersectionObserver'
 
 const certificates = [
-  { webp: '/img/sertificates/1.webp',                    alt: 'Certificate 1' },
-  { webp: '/img/sertificates/2.webp',                    alt: 'Certificate 2' },
-  { webp: '/img/sertificates/3.webp',                    alt: 'Certificate 3' },
-  { webp: '/img/sertificates/4.webp',                    alt: 'Certificate 4' },
-  { webp: '/img/sertificates/Javascript-certificate.webp', alt: 'JavaScript Certificate' },
+  { webp: '/img/sertificates/udemy-javascript-2020.webp',          alt: 'Udemy — JavaScript с нуля до результата (2020)' },
+  { webp: '/img/sertificates/aws-awesome-day-2021.webp',           alt: 'AWS AWSome Day Online Conference (2021)' },
+  { webp: '/img/sertificates/aws-cloud-practitioner-2021.webp',    alt: 'AWS Cloud Practitioner Essentials Day (2021)' },
+  { webp: '/img/sertificates/aws-innovate-2021.webp',              alt: 'AWS Innovate Online Conference (2021)' },
+  { webp: '/img/sertificates/javascriptru-nodejs-nestjs-2025.webp', alt: 'JavaScript.ru — Node.js с NestJS (2025)' },
 ]
 
 const selected = ref<string | null>(null)
