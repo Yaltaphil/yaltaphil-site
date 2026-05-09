@@ -19,7 +19,7 @@
           <div class="w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden ring-4 ring-white/30 shadow-2xl">
             <img
               alt="My photo"
-              class="w-full h-full object-cover pan-image-top-right"
+              class="w-full h-full object-cover object-[center_18%] pan-image-top-right"
               src="/img/yaltaphil.jpg"
             />
           </div>
