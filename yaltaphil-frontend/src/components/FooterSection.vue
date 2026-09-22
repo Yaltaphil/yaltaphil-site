@@ -1,4 +1,6 @@
 <script setup lang="ts">
+const emit = defineEmits<{ 'open-secret': [] }>()
+
 const year = new Date().getFullYear()
 
 const links = [
@@ -60,6 +62,11 @@ const socials = [
 
       <div class="mt-10 pt-6 border-t border-gray-800 text-center text-xs text-gray-600">
         &copy; {{ year }} Philip Ryazankin. Built with Vue&nbsp;3&nbsp;+&nbsp;Vite&nbsp;+&nbsp;Tailwind.
+        <button
+          @click="emit('open-secret')"
+          class="inline-block ml-1 opacity-10 hover:opacity-40 transition-opacity duration-200 cursor-pointer"
+          aria-label="?"
+        >·</button>
       </div>
     </div>
   </footer>
