@@ -16,15 +16,23 @@ const showSecret = ref(false)
 </script>
 
 <template>
-  <SecretPage v-if="showSecret" @back="showSecret = false" />
-  <div v-else class="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300 font-sans">
+  <div class="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300 font-sans">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[70] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-white focus:text-brand-700 focus:shadow-lg focus:font-semibold"
+    >
+      Skip to content
+    </a>
     <NavBar :projects-count="projects.length" />
-    <HeroSection />
-    <TechSection :technologies="technologies" />
-    <PortfolioSection :projects="projects" />
-    <CertificatesSection />
-    <ContactSection />
+    <main id="main" tabindex="-1">
+      <HeroSection />
+      <TechSection :technologies="technologies" />
+      <PortfolioSection :projects="projects" />
+      <CertificatesSection />
+      <ContactSection />
+    </main>
     <FooterSection @open-secret="showSecret = true" />
     <ScrollToTop />
   </div>
+  <SecretPage v-if="showSecret" @back="showSecret = false" />
 </template>

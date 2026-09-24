@@ -1,37 +1,37 @@
 <script setup lang="ts">
 import PortfolioItem from './PortfolioItem.vue'
-import { useIntersectionObserver } from '@/composables/useIntersectionObserver'
+import SectionHeading from './SectionHeading.vue'
+import { useReveal } from '@/composables/useReveal'
 import type IProject from '@/models/IProject'
 
 defineProps<{
   projects: IProject[]
 }>()
 
-const { el: heading, visible: headingVisible } = useIntersectionObserver(0.3)
-const { el: grid, visible: gridVisible } = useIntersectionObserver(0.05)
+const { el: grid, visible: gridVisible } = useReveal(0.05)
 </script>
 
 <template>
-  <section id="portfolio" class="py-20 bg-gray-50 dark:bg-gray-950">
-    <div class="max-w-5xl mx-auto px-4">
+  <section id="portfolio" class="py-20 md:py-24 bg-gray-50 dark:bg-gray-950">
+    <div class="max-w-content mx-auto px-4">
 
-      <div ref="heading" :class="['fade-in-up', { visible: headingVisible }]">
-        <h2 class="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12">
-          Portfolio
-        </h2>
-      </div>
+      <SectionHeading
+        eyebrow="Selected work"
+        title="Portfolio"
+        subtitle="Products and prototypes I built or contributed to — from streaming platforms to landing pages."
+      />
 
       <div
         ref="grid"
-        :class="['flex flex-wrap justify-center gap-8', { 'section-visible': gridVisible }]"
+        :class="['grid gap-6 sm:grid-cols-2 lg:grid-cols-3', { 'section-visible': gridVisible }]"
       >
         <div
           v-for="(item, i) in projects"
-          :key="i"
+          :key="item.link"
           class="stagger-item"
-          :style="{ '--delay': `${i * 0.1}s` }"
+          :style="{ '--delay': `${i * 0.08}s` }"
         >
-          <PortfolioItem :item="item" />
+          <PortfolioItem :item="item" class="h-full" />
         </div>
       </div>
 

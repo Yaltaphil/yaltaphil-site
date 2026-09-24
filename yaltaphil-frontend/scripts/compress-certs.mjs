@@ -2,7 +2,7 @@ import sharp from 'sharp'
 import { readdir, stat } from 'node:fs/promises'
 import { join, extname, basename } from 'node:path'
 
-const dir = './public/img/sertificates'
+const dir = './public/img/certificates'
 const files = await readdir(dir)
 
 for (const file of files) {

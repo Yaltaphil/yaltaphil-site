@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Sticky NavBar height (64px row + 1px border) — anchors must land below it, not
+   underneath it. One mechanism only: scroll-padding on the scroll container already
+   covers every target, so sections must not add their own scroll-margin on top. */
+:root {
+  --nav-height: calc(4rem + 1px);
+}
+
+html {
+  scroll-padding-top: var(--nav-height);
+}
+
 /* Section heading fade-in */
 .fade-in-up {
   opacity: 0;
@@ -35,4 +46,34 @@
   animation: hero-fade-up 0.7s ease forwards;
   animation-delay: var(--delay, 0s);
   opacity: 0;
+}
+
+@keyframes ken-burns {
+  0%   { transform: scale(1)    translate(0, 0);        transform-origin: 84% 16%; }
+  50%  { transform: scale(1.25) translate(20px, -15px); transform-origin: right top; }
+  100% { transform: scale(1)    translate(0, 0);        transform-origin: 84% 16%; }
+}
+.ken-burns {
+  /* Four passes, then the portrait settles — an infinite 36s loop taxes the GPU forever. */
+  animation: ken-burns 36s cubic-bezier(0.215, 0.61, 0.355, 1) 4 both;
+}
+
+/* 100vh is the mobile URL-bar trap; svh is the fix, vh the fallback for old browsers. */
+.hero-min {
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* `forwards`/`visible` states must still resolve, or content stays at opacity:0. */
+  .fade-in-up, .stagger-item, .hero-animate {
+    opacity: 1;
+    transform: none;
+  }
 }
