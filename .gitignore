@@ -102,3 +102,6 @@ dist
 
 # TernJS port file
 .tern-port
+
+# IDE directories (matches at any depth, including each package's own .idea/)
+.idea/
