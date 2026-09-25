@@ -34,15 +34,22 @@ runtime dependency is `vue`.
 
 ```bash
 npm install
-npm run start:dev        # ts-node src/main.ts (PORT default 8080)
+npm run start:dev        # ts-node src/main.ts — plain run, no watch: restart by hand after edits
 npm run build            # tsc -p tsconfig.json → dist/
 npm start                # node dist/main
 ```
 
-Requires `yaltaphil-backend/.env` with:
-- `MONGO_URI=<connection string>` — **required**; `MongooseModule.forRoot(process.env.MONGO_URI!)`
-  has no fallback, so the app dies on boot without it. The database name comes from this string.
-- `PORT=8080` (optional, defaults to 8080)
+Requires `yaltaphil-backend/.env`, which is read from `process.cwd()` — run the scripts from
+`yaltaphil-backend/`, not from the repo root:
+- `MONGO_URI=<connection string>` — **required**, and it must start with `mongodb://` or
+  `mongodb+srv://`. `MongooseModule.forRoot(process.env.MONGO_URI!)` has no fallback. The database
+  name comes from this string.
+- `PORT=<number>` — optional, defaults to 8080; must be a whole number in 1–65535 and be free.
+
+`main.ts` validates both **before** `NestFactory.create`, so a missing or malformed `MONGO_URI`, a
+bad `PORT` or an occupied port prints `[warning] …` on stderr and leaves exit code 1 without
+connecting to MongoDB or mapping a single route. The URI value is deliberately never echoed — it
+carries credentials.
 
 ## Architecture
 
@@ -126,9 +133,15 @@ why generated icons use a simplified vector "Y" monogram rather than the real lo
 
 ### Backend
 
-NestJS modular monolith under `yaltaphil-backend/src/`: `main.ts` (bootstrap, `enableCors()`,
-urlencoded body parser), `app.module.ts` (`ConfigModule` + `MongooseModule`), and a single feature
-module `users/` (`user.schema.ts`, `users.module.ts`, `users.controller.ts`, `users.service.ts`).
+NestJS modular monolith under `yaltaphil-backend/src/`: `main.ts` (startup config checks, bootstrap,
+`enableCors()`, urlencoded body parser), `app.module.ts` (`ConfigModule` + `MongooseModule`), and a
+single feature module `users/` (`user.schema.ts`, `users.module.ts`, `users.controller.ts`,
+`users.service.ts`).
+
+The order inside `app.module.ts`'s `imports` array is load-bearing, not cosmetic:
+`ConfigModule.forRoot()` is what pushes `.env` into `process.env`, and it only does that before
+`MongooseModule.forRoot(process.env.MONGO_URI!)` reads it because the two are evaluated left to
+right in the same array literal. Reorder them and `MONGO_URI` is `undefined` at startup.
 
 `UsersController` is mounted at the root path:
 
@@ -143,7 +156,8 @@ module `users/` (`user.schema.ts`, `users.module.ts`, `users.controller.ts`, `us
 | `POST /result` | Legacy HTML `<ol>` search results |
 
 Data model: `User { name, role }`; collection `users` (Mongoose default pluralization). The whole
-thing is still a development prototype — no auth, no validation layer, no tests.
+thing is still a development prototype — no auth, no tests, and no request validation: the config
+checks in `main.ts` are the only validation in the package.
 
 ## Key Files & Locations
 
@@ -173,7 +187,7 @@ yaltaphil-site/
 │       ├── models/IProject.ts
 │       └── assets/data/              # projects, technologies, certificates, navigation
 └── yaltaphil-backend/
-    ├── .env                          # not in repo; MONGO_URI required
+    ├── .env                          # not in repo; MONGO_URI required, PORT optional
     ├── tsconfig.json
     └── src/
         ├── main.ts · app.module.ts
