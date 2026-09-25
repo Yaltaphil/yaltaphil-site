@@ -1,20 +1,22 @@
 <script setup lang="ts">
 import AppIcon from './AppIcon.vue'
 import { NAV_ITEMS } from '@/assets/data/navigation'
+import { usePrintCv } from '@/composables/usePrintCv'
 
 const emit = defineEmits<{ 'open-secret': [] }>()
 
+const { printCv } = usePrintCv()
 const year = new Date().getFullYear()
 
 const socials = [
-  { icon: 'github',   label: 'GitHub',   href: 'https://github.com/yaltaphil' },
-  { icon: 'telegram', label: 'Telegram', href: 'https://t.me/Yaltaphil' },
-  { icon: 'mail',     label: 'Email',    href: 'mailto:yaltaphil@gmail.com' },
+  { icon: 'github',   label: 'GitHub',   href: 'https://github.com/yaltaphil', external: true },
+  { icon: 'telegram', label: 'Telegram', href: 'https://t.me/Yaltaphil',       external: true },
+  { icon: 'mail',     label: 'Email',    href: 'mailto:yaltaphil@gmail.com',   external: false },
 ] as const
 </script>
 
 <template>
-  <footer class="bg-gray-950 text-gray-400 border-t border-gray-800">
+  <footer class="bg-gray-950 text-gray-400 border-t border-gray-800 print:hidden">
     <div class="max-w-content mx-auto px-4 py-12">
       <div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-8">
 
@@ -24,7 +26,7 @@ const socials = [
             <img alt="yaltaphil logo" class="w-7 h-7" src="/img/Y-logo.png" width="128" height="128" />
             <span class="text-white font-bold text-base">yaltaphil</span>
           </a>
-          <p class="text-sm text-gray-500">Frontend developer · Vue / Nuxt</p>
+          <p class="text-sm text-gray-400">Frontend developer · Vue / Nuxt</p>
         </div>
 
         <!-- Nav links -->
@@ -46,8 +48,8 @@ const socials = [
             :key="s.label"
             :href="s.href"
             :aria-label="s.label"
-            target="_blank"
-            rel="noopener"
+            :target="s.external ? '_blank' : undefined"
+            :rel="s.external ? 'noopener' : undefined"
             class="w-9 h-9 flex items-center justify-center rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-150"
           >
             <AppIcon :name="s.icon" class="w-4 h-4" />
@@ -56,13 +58,24 @@ const socials = [
 
       </div>
 
-      <div class="mt-10 pt-6 border-t border-gray-800 text-center text-xs text-gray-600">
-        &copy; {{ year }} Philip Ryazankin. Built with Vue&nbsp;3&nbsp;+&nbsp;Vite&nbsp;+&nbsp;Tailwind.
+      <div class="mt-10 pt-6 border-t border-gray-800 flex flex-col items-center gap-4 text-xs sm:flex-row sm:justify-between">
+        <p class="text-gray-400">
+          &copy; {{ year }} Philip Ryazankin. Built with Vue&nbsp;3&nbsp;+&nbsp;Vite&nbsp;+&nbsp;Tailwind.
+          <button
+            @click="emit('open-secret')"
+            class="inline-block ml-1 opacity-10 hover:opacity-40 transition-opacity duration-200 cursor-pointer"
+            aria-label="?"
+          >·</button>
+        </p>
+
         <button
-          @click="emit('open-secret')"
-          class="inline-block ml-1 opacity-10 hover:opacity-40 transition-opacity duration-200 cursor-pointer"
-          aria-label="?"
-        >·</button>
+          type="button"
+          @click="printCv"
+          class="inline-flex items-center gap-1.5 rounded-lg border border-gray-700 px-3 py-1.5 font-medium text-gray-300 hover:border-gray-500 hover:text-white transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+        >
+          <AppIcon name="download" class="w-3.5 h-3.5" />
+          Save as PDF
+        </button>
       </div>
     </div>
   </footer>

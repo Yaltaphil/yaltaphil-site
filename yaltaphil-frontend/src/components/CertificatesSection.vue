@@ -54,19 +54,19 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
       <SectionHeading
         eyebrow="Learning"
         title="Certificates"
-        subtitle="Conference and course certificates. Click any of them to open the full scan."
+        subtitle="Conference and course certificates — Udemy, AWS and JavaScript.ru."
       />
 
       <div
         ref="grid"
-        :class="['grid grid-cols-2 md:grid-cols-5 gap-4', { 'section-visible': gridVisible }]"
+        :class="['grid grid-cols-2 md:grid-cols-5 gap-4 print:hidden', { 'section-visible': gridVisible }]"
       >
         <button
           v-for="(c, i) in certificates"
           :key="c.full"
           @click="open(i, $event)"
           :aria-label="`Open certificate: ${c.title}`"
-          class="stagger-item group rounded-xl overflow-hidden bg-white dark:bg-gray-800 shadow-card border border-gray-100 dark:border-gray-700 hover:shadow-card-hover hover:-translate-y-1 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+          class="stagger-item group rounded-xl overflow-hidden bg-gray-50 dark:bg-gray-800 shadow-card border border-gray-200 dark:border-gray-700 hover:shadow-card-hover hover:-translate-y-1 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
           :style="{ '--delay': `${i * 0.08}s` }"
         >
           <!-- object-contain: cropping a document at its serial number is not a thumbnail. -->
@@ -83,12 +83,19 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
             <span class="block text-xs font-semibold text-gray-800 dark:text-gray-100 leading-tight line-clamp-2">
               {{ c.title }}
             </span>
-            <span class="mt-0.5 block text-[11px] text-gray-400 dark:text-gray-500 font-mono">
+            <span class="mt-0.5 block text-[11px] text-gray-500 dark:text-gray-400 font-mono">
               {{ c.issuer }} · {{ c.year }}
             </span>
           </span>
         </button>
       </div>
+
+      <!-- Scans are illegible once squeezed into five paper columns, so print gets a list. -->
+      <ul class="hidden print:block print:space-y-1">
+        <li v-for="c in certificates" :key="c.full" class="text-xs text-gray-700">
+          <span class="font-semibold">{{ c.title }}</span> — {{ c.issuer }}, {{ c.year }}
+        </li>
+      </ul>
 
     </div>
 

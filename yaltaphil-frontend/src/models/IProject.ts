@@ -10,4 +10,6 @@ export default interface IProject {
   tags?: string[]
   year?: number
   role?: string  // e.g. 'Frontend Dev', 'Team Lead' — omit for solo projects
+  /** Rendered as a full-width lead card above the grid instead of a regular tile. */
+  featured?: boolean
 }

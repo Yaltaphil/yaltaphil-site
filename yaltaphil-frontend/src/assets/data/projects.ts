@@ -11,6 +11,7 @@ export const projects: IProject[] = [
     tags: ['Nuxt', 'Vue', 'TypeScript'],
     role: 'Frontend Dev',
     year: 2024,
+    featured: true,
   },
   {
     title: 'DOIT gaming portal',

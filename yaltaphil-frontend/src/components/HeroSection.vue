@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import AppIcon from './AppIcon.vue'
+import { usePrintCv } from '@/composables/usePrintCv'
+
+const { printCv } = usePrintCv()
 </script>
 
 <template>
   <section
     id="about"
-    class="relative hero-min flex items-center overflow-hidden bg-gradient-to-br from-brand-700 via-brand-500 to-accent dark:from-gray-900 dark:via-brand-950 dark:to-gray-900"
+    class="relative hero-min flex items-center overflow-hidden bg-gradient-to-br from-brand-700 via-brand-600 to-accent dark:from-gray-900 dark:via-brand-950 dark:to-gray-900 print:hidden"
   >
     <!-- Декоративные orbs -->
     <div class="pointer-events-none absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full bg-purple-500/25 blur-3xl" />
@@ -43,8 +46,8 @@ import AppIcon from './AppIcon.vue'
           <h1 class="text-5xl md:text-6xl font-extrabold text-white mb-4 leading-tight tracking-tight hero-animate" style="--delay: 0.38s">
             Philip Ryazankin
           </h1>
-          <p class="text-lg text-white/75 mb-8 max-w-md dark:text-white/65 hero-animate" style="--delay: 0.52s">
-            Frontend developer focused on Vue&nbsp;&amp;&nbsp;Nuxt. I enjoy building fast, clean, and interactive web experiences.
+          <p class="text-lg text-white/90 mb-8 max-w-md dark:text-white/80 hero-animate" style="--delay: 0.52s">
+            Frontend developer focused on Vue&nbsp;&amp;&nbsp;Nuxt, with five years of commercial experience. Looking for a team with a strong engineering process.
           </p>
 
           <div class="flex flex-wrap gap-3 justify-center md:justify-start hero-animate" style="--delay: 0.66s">
@@ -63,6 +66,14 @@ import AppIcon from './AppIcon.vue'
               <AppIcon name="github" class="w-5 h-5" />
               GitHub
             </a>
+            <button
+              type="button"
+              @click="printCv"
+              class="px-6 py-3 bg-white/10 text-white font-semibold rounded-xl border border-white/20 hover:bg-white/20 hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2"
+            >
+              <AppIcon name="download" class="w-5 h-5" />
+              Save as PDF
+            </button>
           </div>
         </div>
 
@@ -72,7 +83,7 @@ import AppIcon from './AppIcon.vue'
     <!-- Scroll hint -->
     <a
       href="#portfolio"
-      class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/40 hover:text-white/70 text-xs transition-colors hero-animate"
+      class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/90 hover:text-white text-xs transition-colors hero-animate"
       style="--delay: 1s"
       aria-label="Scroll to portfolio"
     >

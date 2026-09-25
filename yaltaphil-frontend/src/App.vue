@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import NavBar from './components/NavBar.vue'
+import PrintHeader from './components/PrintHeader.vue'
 import HeroSection from './components/HeroSection.vue'
+import ExperienceSection from './components/ExperienceSection.vue'
 import TechSection from './components/TechSection.vue'
 import PortfolioSection from './components/PortfolioSection.vue'
 import CertificatesSection from './components/CertificatesSection.vue'
@@ -11,6 +13,9 @@ import ScrollToTop from './components/ScrollToTop.vue'
 import SecretPage from './components/SecretPage.vue'
 import { technologies } from './assets/data/technologies'
 import { projects } from './assets/data/projects'
+import { useJsonLd } from './composables/useJsonLd'
+
+useJsonLd()
 
 const showSecret = ref(false)
 </script>
@@ -25,7 +30,9 @@ const showSecret = ref(false)
     </a>
     <NavBar :projects-count="projects.length" />
     <main id="main" tabindex="-1">
+      <PrintHeader />
       <HeroSection />
+      <ExperienceSection />
       <TechSection :technologies="technologies" />
       <PortfolioSection :projects="projects" />
       <CertificatesSection />

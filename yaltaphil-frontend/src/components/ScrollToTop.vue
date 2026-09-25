@@ -22,7 +22,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
       v-if="visible"
       @click="scrollToTop"
       aria-label="Scroll to top"
-      class="fixed bottom-6 right-6 z-40 w-10 h-10 flex items-center justify-center rounded-xl bg-brand-600 text-white shadow-lg shadow-brand-500/30 hover:bg-brand-500 hover:-translate-y-0.5 transition-all duration-200"
+      class="fixed bottom-6 right-6 z-40 w-10 h-10 flex items-center justify-center rounded-xl bg-brand-600 text-white shadow-lg shadow-brand-500/30 hover:bg-brand-500 hover:-translate-y-0.5 transition-all duration-200 print:hidden"
     >
       <AppIcon name="arrow-up" class="w-4 h-4" />
     </button>

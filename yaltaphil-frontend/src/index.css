@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Self-hosted Inter. Google served all five requested weights from this one variable file,
+   so a single ranged @font-face replaces the whole stylesheet and drops two third-party
+   origins from the critical path. SIL OFL 1.1 — the licence text ships beside the font in
+   public/fonts/OFL.txt. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-var-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 /* Sticky NavBar height (64px row + 1px border) — anchors must land below it, not
    underneath it. One mechanism only: scroll-padding on the scroll container already
    covers every target, so sections must not add their own scroll-margin on top. */
@@ -75,5 +88,59 @@ html {
   .fade-in-up, .stagger-item, .hero-animate {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* Print = the CV. Nav, hero, contact and footer are switched off in markup with
+   `print:hidden`; what is left is masthead → experience → stack → portfolio → certificates.
+   The theme guard in usePrintCv drops `.dark` for the duration, so only light styles apply. */
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  /* Print output must not depend on animation timing. Setting the end state alone is not
+     enough: `transition` would animate towards it, and a page printed mid-reveal comes out
+     with the last cards nearly transparent (measured 0.997 … 0.028 across one row). */
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  /* A section the reader never scrolled to is still at opacity:0 — without this the CV
+     prints as blank space where the unvisited sections were. */
+  .fade-in-up, .stagger-item, .hero-animate {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Screen spacing is sized for a 100svh hero and a 64rem container; on ~180mm of paper
+     it is mostly waste. */
+  main section {
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+  }
+  .fade-in-up {
+    margin-bottom: 14px !important;
+  }
+  /* Four logo groups at `space-y-12` between them cost most of a page on their own. */
+  #stack .stagger-item + .stagger-item {
+    margin-top: 10px !important;
+  }
+
+  /* Keep a card, a certificate tile or a job entry from being split across two pages,
+     and never strand a heading at the foot of one. */
+  main .stagger-item {
+    break-inside: avoid;
+  }
+  h1, h2, h3 {
+    break-after: avoid;
+  }
+
+  /* Backgrounds are dropped in print by default, which would silently delete the timeline
+     spine and its dots and leave the jobs reading as an unstructured list. */
+  #experience span[aria-hidden="true"] {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 }

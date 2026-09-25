@@ -12,6 +12,19 @@ const nav = ref<HTMLElement | null>(null)
 const burger = ref<HTMLElement | null>(null)
 const panel = ref<HTMLElement | null>(null)
 
+const progress = ref(0)
+const scrolled = ref(false)
+let frame = 0
+
+const measure = () => {
+  frame = 0
+  const max = document.documentElement.scrollHeight - window.innerHeight
+  progress.value = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0
+  scrolled.value = window.scrollY > 8
+}
+
+const onScroll = () => { if (!frame) frame = requestAnimationFrame(measure) }
+
 let observer: IntersectionObserver | null = null
 
 const close = (restoreFocus = false) => {
@@ -50,8 +63,11 @@ onMounted(() => {
   document.addEventListener('pointerdown', onPointerDown)
   document.addEventListener('keydown', onKeydown)
 
-  // Growing past the mobile breakpoint must not strand an open panel.
-  const desktop = window.matchMedia('(min-width: 768px)')
+  measure()
+  window.addEventListener('scroll', onScroll, { passive: true })
+
+  // Growing past the desktop breakpoint must not strand an open panel.
+  const desktop = window.matchMedia('(min-width: 1024px)')
   const onBreakpoint = (e: MediaQueryListEvent) => { if (e.matches) close() }
   desktop.addEventListener('change', onBreakpoint)
 })
@@ -60,13 +76,23 @@ onUnmounted(() => {
   observer?.disconnect()
   document.removeEventListener('pointerdown', onPointerDown)
   document.removeEventListener('keydown', onKeydown)
+  window.removeEventListener('scroll', onScroll)
+  if (frame) cancelAnimationFrame(frame)
 })
 </script>
 
 <template>
   <!-- `relative` + an out-of-flow panel: an in-flow dropdown would shift every section
        while open, so an anchor tapped in it would land at a stale scroll position. -->
-  <nav ref="nav" class="sticky top-0 z-50 relative bg-brand-900/80 backdrop-blur-md border-b border-white/10 dark:bg-gray-950/90">
+  <nav
+    ref="nav"
+    :class="[
+      'sticky top-0 z-50 relative backdrop-blur-md border-b border-white/10 transition-shadow duration-200 print:hidden',
+      scrolled
+        ? 'bg-brand-900/95 shadow-lg shadow-black/25 dark:bg-gray-950/95'
+        : 'bg-brand-900/80 dark:bg-gray-950/90',
+    ]"
+  >
     <div class="max-w-content mx-auto px-4 flex items-center justify-between h-16">
 
       <a href="#about" class="flex items-center gap-2 flex-shrink-0">
@@ -74,8 +100,8 @@ onUnmounted(() => {
         <span class="text-white font-bold text-base tracking-tight">yaltaphil</span>
       </a>
 
-      <!-- Desktop -->
-      <div class="hidden md:flex items-center gap-1">
+      <!-- Desktop. Six items no longer fit at 768px, so the row starts at `lg`. -->
+      <div class="hidden lg:flex items-center gap-1">
         <a
           v-for="item in NAV_ITEMS"
           :key="item.id"
@@ -98,7 +124,7 @@ onUnmounted(() => {
       </div>
 
       <!-- Mobile -->
-      <div class="flex md:hidden items-center gap-1">
+      <div class="flex lg:hidden items-center gap-1">
         <DarkModeToggle />
         <button
           ref="burger"
@@ -122,7 +148,7 @@ onUnmounted(() => {
         ref="panel"
         tabindex="-1"
         aria-label="Site sections"
-        class="md:hidden absolute inset-x-0 top-full border-t border-white/10 bg-brand-900/95 backdrop-blur-md shadow-xl shadow-black/25 outline-none"
+        class="lg:hidden absolute inset-x-0 top-full border-t border-white/10 bg-brand-900/95 backdrop-blur-md shadow-xl shadow-black/25 outline-none"
       >
         <div class="max-w-content mx-auto px-2 py-2">
           <a
@@ -142,6 +168,14 @@ onUnmounted(() => {
         </div>
       </div>
     </Transition>
+
+    <!-- Reading progress. No transition on purpose: it tracks the scrollbar directly, and
+         easing would make it lag behind. Absolute, so `--nav-height` is unaffected. -->
+    <div
+      class="absolute inset-x-0 bottom-0 h-0.5 origin-left bg-brand-400"
+      :style="{ transform: `scaleX(${progress})` }"
+      aria-hidden="true"
+    />
 
   </nav>
 </template>

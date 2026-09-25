@@ -24,7 +24,7 @@ const CATEGORY_COLOR: Record<TechCategory, string> = {
 </script>
 
 <template>
-  <section id="stack" class="py-20 md:py-24 bg-gray-50 dark:bg-gray-950">
+  <section id="stack" class="py-20 md:py-24 bg-white dark:bg-gray-900">
     <div class="max-w-content mx-auto px-4">
 
       <SectionHeading
@@ -43,14 +43,14 @@ const CATEGORY_COLOR: Record<TechCategory, string> = {
           <p :class="['text-xs font-semibold uppercase tracking-widest mb-5', CATEGORY_COLOR[group.cat]]">
             {{ group.cat }}
           </p>
-          <div class="flex flex-wrap gap-5">
+          <div class="flex flex-wrap gap-5 print:hidden">
             <div
               v-for="(tech, i) in group.items"
               :key="tech.title"
               class="stagger-item flex flex-col items-center gap-2 group"
               :style="{ '--delay': `${gi * 0.1 + i * 0.04}s` }"
             >
-              <div class="w-14 h-14 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 flex items-center justify-center p-2.5 shadow-card group-hover:shadow-card-hover group-hover:scale-110 group-hover:border-brand-200 dark:group-hover:border-brand-700 transition-all duration-200">
+              <div class="w-14 h-14 rounded-2xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center p-2.5 shadow-card group-hover:shadow-card-hover group-hover:scale-110 group-hover:border-brand-200 dark:group-hover:border-brand-700 transition-all duration-200">
                 <img
                   :src="tech.logo"
                   :alt="tech.title"
@@ -58,7 +58,7 @@ const CATEGORY_COLOR: Record<TechCategory, string> = {
                   :height="48"
                   loading="lazy"
                   decoding="async"
-                  class="w-full h-full object-contain"
+                  :class="['w-full h-full object-contain', tech.monochrome && 'dark:invert']"
                 />
               </div>
               <span class="text-xs text-gray-500 dark:text-gray-400 font-medium text-center leading-tight max-w-[64px]">
@@ -66,6 +66,10 @@ const CATEGORY_COLOR: Record<TechCategory, string> = {
               </span>
             </div>
           </div>
+          <!-- 18 logos cost about a page of paper; a CV wants the names, not the artwork. -->
+          <p class="hidden print:block text-sm leading-relaxed text-gray-700">
+            {{ group.items.map(t => t.title).join(' · ') }}
+          </p>
         </div>
       </div>
 
