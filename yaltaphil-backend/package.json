@@ -4,7 +4,7 @@
   "description": "Portfolio backend — NestJS + Mongoose",
   "scripts": {
     "start": "node dist/main",
-    "start:dev": "ts-node -r tsconfig-paths/register src/main.ts",
+    "start:dev": "node_modules\\.bin\\ts-node.cmd -r tsconfig-paths/register src/main.ts",
     "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
