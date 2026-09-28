@@ -2,6 +2,7 @@ import 'reflect-metadata'
 import { createServer } from 'node:net'
 import { NestFactory } from '@nestjs/core'
 import { NestExpressApplication } from '@nestjs/platform-express'
+import { WsAdapter } from '@nestjs/platform-ws'
 import { AppModule } from './app.module'
 
 const DEFAULT_PORT = 8080
@@ -97,8 +98,9 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
   app.enableCors()
   app.useBodyParser('urlencoded', { extended: false })
+  app.useWebSocketAdapter(new WsAdapter(app))
   await app.listen(port)
-  console.log(`listening at http://localhost:${port}`)
+  console.log(`listening at http://localhost:${port} (ws: ws://localhost:${port}/ws)`)
 }
 
 bootstrap()
