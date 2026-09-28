@@ -11,35 +11,43 @@ import ContactSection from './components/ContactSection.vue'
 import FooterSection from './components/FooterSection.vue'
 import ScrollToTop from './components/ScrollToTop.vue'
 import SecretPage from './components/SecretPage.vue'
+import ChatPage from './components/ChatPage.vue'
 import { technologies } from './assets/data/technologies'
 import { projects } from './assets/data/projects'
 import { useJsonLd } from './composables/useJsonLd'
 
 useJsonLd()
 
+// Two documents, not two views: /chat is entered by URL and left by URL, so deciding once at
+// boot covers the whole thing. A router would be the first runtime dependency besides vue.
+const isChat = window.location.pathname.replace(/\/+$/, '') === '/chat'
+
 const showSecret = ref(false)
 </script>
 
 <template>
-  <div class="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300 font-sans">
-    <a
-      href="#main"
-      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[70] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-white focus:text-brand-700 focus:shadow-lg focus:font-semibold"
-    >
-      Skip to content
-    </a>
-    <NavBar :projects-count="projects.length" />
-    <main id="main" tabindex="-1">
-      <PrintHeader />
-      <HeroSection />
-      <ExperienceSection />
-      <TechSection :technologies="technologies" />
-      <PortfolioSection :projects="projects" />
-      <CertificatesSection />
-      <ContactSection />
-    </main>
-    <FooterSection @open-secret="showSecret = true" />
-    <ScrollToTop />
-  </div>
-  <SecretPage v-if="showSecret" @back="showSecret = false" />
+  <ChatPage v-if="isChat" />
+  <template v-else>
+    <div class="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300 font-sans">
+      <a
+        href="#main"
+        class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[70] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-white focus:text-brand-700 focus:shadow-lg focus:font-semibold"
+      >
+        Skip to content
+      </a>
+      <NavBar :projects-count="projects.length" />
+      <main id="main" tabindex="-1">
+        <PrintHeader />
+        <HeroSection />
+        <ExperienceSection />
+        <TechSection :technologies="technologies" />
+        <PortfolioSection :projects="projects" />
+        <CertificatesSection />
+        <ContactSection />
+      </main>
+      <FooterSection @open-secret="showSecret = true" />
+      <ScrollToTop />
+    </div>
+    <SecretPage v-if="showSecret" @back="showSecret = false" />
+  </template>
 </template>

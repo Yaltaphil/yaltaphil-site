@@ -1,5 +1,6 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+# The demo chat is a writable, unlinked view — keep it out of the index.
+Disallow: /chat
 
 Sitemap: https://yaltaphil.ru/sitemap.xml

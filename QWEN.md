@@ -10,9 +10,11 @@ This file provides guidance to Qwen Code when working with code in this reposito
 - **`yaltaphil-backend/`** — NestJS 12 + Mongoose 9 API with a small server-rendered debug page
 - **Purpose**: portfolio/resume site for a frontend developer (projects, tech stack, certificates, contacts)
 
-The two packages do **not** talk to each other: the frontend makes zero network requests (no
-`fetch`, no `axios`, no `import.meta.env`) and renders entirely from typed data files. The backend
-is a separate prototype service.
+The two packages are mostly independent: the portfolio itself makes **zero** network requests and
+renders entirely from typed data files. The one exception is the `/chat` view, which talks to the
+backend's `messages` resource through a relative `/api` prefix that Vite proxies — see
+[Chat view](#chat-view-chat). Outside that view there is no `fetch`, no `WebSocket` and no
+`import.meta.env` in `src/`.
 
 ## Development Commands
 
@@ -67,7 +69,11 @@ almost-invisible `·` in the footer.
 
 **There is no router, on purpose.** Navigation is `#anchor` links to sections carrying `id`
 (`about`, `stack`, `portfolio`, `certificates`, `contact`). Don't add `vue-router` for a new
-full-screen view — use a `ref` + `v-if` overlay like `SecretPage.vue`.
+full-screen view — use a `ref` + `v-if` overlay like `SecretPage.vue`. The one exception is
+`/chat`, a genuine second URL that must be its own document because the whole portfolio is a
+single scroll: `App.vue` tests `location.pathname` once at boot and renders `ChatPage.vue`
+*instead of* the portfolio, so entering and leaving are plain document loads and there is no
+client-side route state to keep in sync.
 
 Components (`src/components/`):
 
@@ -82,6 +88,7 @@ Components (`src/components/`):
 | `CertificatesSection.vue` | Thumb grid + lightbox (`role="dialog"`, Esc/←/→, focus restored to the opened tile) |
 | `ContactSection.vue`, `FooterSection.vue` | Contact links and site footer |
 | `DarkModeToggle.vue`, `ScrollToTop.vue`, `SecretPage.vue` | Theme switch, floating scroll-to-top, hidden full-screen view |
+| `ChatPage.vue` | The `/chat` document: display-name gate, transcript, composer, connection pill. Reuses the `SecretPage` conventions (`h-[100dvh]`, brand tokens, focus on mount) but is a page, not a dialog — no `useScrollLock`, no Escape-to-close |
 
 Composables (`src/composables/`):
 
@@ -93,6 +100,33 @@ Composables (`src/composables/`):
 - `useTheme()` — module-level shared `theme` ref. `<html class="dark">` is applied by an **inline
   script in `index.html` before first paint** (to avoid a light flash); this composable only
   reconciles and toggles. Keep both places in sync if the storage key ever changes.
+- `useChat()` — the chat's whole runtime: REST history, the socket, and the reconnect ladder
+  (1s doubling to 15s, reset on a successful open). Owns `messages` / `status` / `author`, where
+  the display name persists in `localStorage` under `chat-author`. Sends go over REST and arrive
+  back as a broadcast, which is why every open tab converges without the client owning any
+  protocol. `put()` **upserts** rather than appends — our own POST lands before its echo does. On
+  a *re*connect the list is re-read, because frames emitted while we were away are gone for good.
+
+Network (`src/api/`) — one module, and the only place allowed to know the backend's wire format:
+
+- `chat.ts` — REST and socket URLs are **relative** (`/api/messages`, `/api/ws`) so the browser
+  stays same-origin and no host or port is hardcoded in app code; Vite supplies the proxy (see
+  [Chat view](#chat-view-chat)). It absorbs the two asymmetries of the protocol: documents arrive
+  as `_id` (the UI only ever sees `id`) and `message:deleted` arrives as a bare `id`, so
+  `message:new` / `message:updated` / `message:deleted` collapse into
+  `{ event: 'message' | 'removed' }`. Anything unrecognised — including the `ready` handshake
+  frame — is dropped by `parseFrame` rather than thrown at the UI. A `fetch` rejection (nothing
+  listening at all) is turned into `Server unreachable`, because Chrome's raw
+  `TypeError: Failed to fetch` is not something a visitor can act on.
+- **The socket never answers a client.** There is no `@SubscribeMessage` in the gateway, and
+  `WsAdapter` silently discards any inbound frame — measured: three sends, zero replies, no ack
+  and no error. Writes therefore go over REST only, and a client cannot ask for a re-sync, so
+  `useChat` re-reads `GET /messages` itself after a reconnect.
+- **`message:deleted` echoes the URL segment verbatim, not the canonical `_id`.** Mongoose casts
+  `6ABA…` and `6aba…` to the same document, so a delete issued with uppercase hex broadcasts that
+  uppercase string back while the stored id is lowercase. `parseFrame` lowercases it — without
+  that the row is stranded in every open tab until the next reconnect (verified both ways in a
+  live browser).
 
 Data (`src/assets/data/`) — content lives here, not in components:
 
@@ -100,7 +134,7 @@ Data (`src/assets/data/`) — content lives here, not in components:
   `certificates.ts` (`ICertificate[]`), `navigation.ts` (`NAV_ITEMS` — the single source for both
   the desktop links and the observed section ids)
 
-Models: `src/models/IProject.ts`.
+Models: `src/models/IProject.ts`, `src/models/IChatMessage.ts`.
 
 ### Styling conventions
 
@@ -135,6 +169,44 @@ Both scripts are idempotent: outputs newer than their input are skipped, and
 `optimize:certs` only converts `jpg/jpeg/png`, so re-running never compounds loss. The source
 `Y-logo.png` is sparse line art (~4% opaque pixels), which collapses to noise at 32px — that is
 why generated icons use a simplified vector "Y" monogram rather than the real logo.
+
+### Chat view (`/chat`)
+
+The only networked surface in the repo, and the only link between the two packages. It is a
+demo of realtime delivery: type a name, post a message, and every other open tab receives it
+over the socket with no polling and no reload.
+
+Running it locally needs the backend up first (`yaltaphil-backend`, `npm run start:dev`), then
+`npm run dev` and **http://localhost:5173/chat**. Both `server.proxy` and `preview.proxy` in
+`vite.config.ts` forward the single `/api` prefix to `BACKEND` and strip it again, so dev and
+`npm run preview` behave identically. `BACKEND` is `http://localhost:3000`, which is the local
+`.env`'s `PORT` — `main.ts` itself defaults to `8080`, so if either side changes, the constant in
+`vite.config.ts` has to change with it. Verified: `rewrite` **is** applied to the `ws://` upgrade
+as well as to plain requests, so one rule covers REST and socket.
+
+Things that are load-bearing and not obvious from the code:
+
+- **Client-side validation is the only validation.** `messages/dto/create-message.dto.ts` is a
+  bare class — no `class-validator` import, no decorators — and no global `ValidationPipe` is
+  registered, so it constrains nothing at runtime. A blank or missing `text` therefore reaches
+  Mongoose's `required` and answers **500** (`{"statusCode":500,"message":"Internal server
+  error"}`), not a 400. `useChat` trims and rejects empty input before asking, which is why the
+  composer disables Send on whitespace. `author` has no rule anywhere either — measured: a
+  one-character name and even `''` both return 201 — and a malformed `:id` fails on Mongoose's
+  cast path with another 500 rather than a 400.
+- **No auth, and writes are open.** `enableCors()` is `Access-Control-Allow-Origin: *` with no
+  allowlist, and `DELETE /messages/:id` is unauthenticated. The view is therefore deliberately
+  **unlinked** — reachable by URL only, like `SecretPage` — and `public/robots.txt` carries
+  `Disallow: /chat`. Do not advertise it in the nav or the sitemap while the backend stays a
+  prototype.
+- **Two tabs of the same browser share one identity**, because the display name lives in
+  `localStorage`. To test multi-user delivery, use a second browser profile or an incognito
+  window; "«name» · change" in the header re-opens the gate with the name prefilled.
+- `isMine` compares author **strings**, so two people who pick the same name see each other's
+  messages as their own. There is no session id to compare against.
+- `ChatPage.vue` derives a `rows` list instead of formatting in the template:
+  `Intl.DateTimeFormat#format` throws `RangeError` on an unparseable date, and one bad
+  `createdAt` from the wire would otherwise take the whole transcript down.
 
 ### Backend
 
@@ -178,6 +250,12 @@ plain browser `WebSocket` with no client library. Events: `ready` on connect, th
 | `GET /messages` | All messages sorted by `createdAt` ascending — no pagination, no filter |
 | `GET /messages/:id` · `PATCH /messages/:id` · `DELETE /messages/:id` | Single-message read / update / delete (204), 404 when the id is unknown |
 
+`src/api/chat.ts` in the frontend is this resource's first real consumer. Two consequences of the
+contract above: `GET /messages` has no pagination, so the chat re-reads the **whole** collection
+on first load and on every reconnect — fine for a demo, linear cost otherwise; and `PATCH` with an
+empty body reaches Mongoose's `_id`-cast path and answers 500, which the chat never exercises
+because it has no edit UI.
+
 Data model: `User { name, role }` and `Message { text, author }` (with `timestamps: true`);
 collections `users` and `messages` (Mongoose default pluralization). Updates go through
 `findByIdAndUpdate(…, { returnDocument: 'after' })` — Mongoose 9 deprecated the `{ new: true }`
@@ -194,7 +272,7 @@ yaltaphil-site/
 ├── yaltaphil-frontend/
 │   ├── index.html                    # meta/OG/JSON-LD/manifest + theme bootstrap + analytics
 │   ├── package.json                  # dev/build/preview/optimize:images/optimize:certs
-│   ├── vite.config.ts                # alias '@' → ./src, @vitejs/plugin-vue
+│   ├── vite.config.ts                # alias '@' → ./src, @vitejs/plugin-vue, /api proxy (server+preview)
 │   ├── tailwind.config.js            # brand ramp, accent, max-w-content, card shadows
 │   ├── tsconfig.json                 # strict: true, noEmit (vue-tsc does the checking)
 │   ├── scripts/
@@ -206,12 +284,13 @@ yaltaphil-site/
 │   │   └── manifest.webmanifest · sitemap.xml · robots.txt · 404.html
 │   └── src/
 │       ├── main.ts                   # createApp(App)
-│       ├── App.vue                   # skip link + <main> + section order
+│       ├── App.vue                   # skip link + <main> + section order; branches to ChatPage on /chat
 │       ├── index.css                 # nav offset, reveal/stagger, reduced-motion
-│       ├── components/               # 13 SFCs (see Architecture)
-│       ├── composables/              # useReveal, useScrollLock, useTheme
-│       ├── models/IProject.ts
-│       └── assets/data/              # projects, technologies, certificates, navigation
+│       ├── api/chat.ts               # the only backend-aware module: REST + frame normalisation
+│       ├── components/               # 14 SFCs (see Architecture)
+│       ├── composables/              # useReveal, useScrollLock, useTheme, useChat, useJsonLd, usePrintCv
+│       ├── models/                   # IProject.ts, IChatMessage.ts
+│       └── assets/data/              # projects, technologies, certificates, navigation, experience
 └── yaltaphil-backend/
     ├── .env                          # not in repo; MONGO_URI required, PORT optional
     ├── tsconfig.json
@@ -235,6 +314,11 @@ yaltaphil-site/
   `h2` with hand-tuned classes.
 - **Add an overlay/full-screen view** → `ref` + `v-if` component using `useScrollLock` and the
   `SecretPage.vue` dialog pattern; no new dependency.
+- **Add a second URL (not an overlay)** → follow `/chat`: a `location.pathname` test in `App.vue`
+  that swaps the whole tree, plus the host rewrite rules below. Still no `vue-router` — that would
+  be the first runtime dependency besides `vue`.
+- **Talk to the backend** → only through `src/api/chat.ts`; keep components free of paths, of
+  `_id`, and of raw `WebSocket` lifecycles (`useChat` owns those).
 - **Verify changes** → `npm run build` (type-checks and builds) plus a real browser pass; see the
   gotchas below before trusting either alone.
 
@@ -249,6 +333,26 @@ yaltaphil-site/
   rather than patching a single spot.
 - To make the branded `public/404.html` actually serve, the host needs a rule for unknown paths
   (e.g. `try_files $uri $uri/ /404.html;` in nginx).
+- **`/chat` needs two host rules, and they interact with the 404 rule above.** A blanket
+  `try_files … /404.html` fallback makes `/chat` return the 404 page, because the file does not
+  exist on disk — `dist/` contains only `index.html` for every route. Scope the fallback:
+  ```nginx
+  location = /chat { try_files /index.html =404; }   # the SPA branch, by exact path
+  location / { try_files $uri $uri/ /404.html; }     # keep the branded 404 for everything else
+  ```
+  and proxy the API on the same origin, mirroring `vite.config.ts` (this is what keeps the
+  relative `/api/...` URLs working in production):
+  ```nginx
+  location /api/ {
+    proxy_pass http://127.0.0.1:3000/;   # trailing slash strips /api, like `rewrite` does
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+  }
+  ```
+  Without the `Upgrade`/`Connection` headers REST still works and the chat silently degrades to
+  "Offline" — verify the socket, not just the page. `/api` is also how the backend avoids
+  `Access-Control-Allow-Origin: *` ever mattering.
 - The backend needs Node.js and a reachable MongoDB; it does not serve the frontend.
 
 ## Working Notes For Agents
@@ -262,6 +366,15 @@ yaltaphil-site/
 - To verify UI behaviour headlessly, serve `dist/` (`npm run preview`) and block the analytics
   hosts (Yandex Metrika, GTM) before waiting on the page: `waitUntil: 'networkidle'` against them
   will hang the run until timeout.
+- **The user usually has the backend already running on its `.env` port**, so a second
+  `npm run start:dev` refuses at the port probe with `[warning] Port 3000 is already in use` and
+  exit code 1. Check the port answers (`GET /messages`) before trying to start it, and never stop
+  a process you did not launch.
+- Chat probes write into the **shared demo database** and the socket broadcasts to every other
+  connected client — including the user's own open tab. Tag probe authors, delete the rows
+  afterwards, and say how many were removed.
+- Two tabs in one browser profile are one user, not two: the display name is `localStorage`. A
+  headless probe needs a separate `browser.newContext()` per identity to exercise delivery.
 - `index.html` loads GTM (`GTM-T25TGDH`) and Yandex Metrika (`87089373`, webvisor on) with no
   consent gate; leave them unless the user asks, and don't drop them by accident when editing the
   `<head>`.
