@@ -7,7 +7,7 @@ This file provides guidance to Qwen Code when working with code in this reposito
 **yaltaphil-site** is a personal portfolio website, a monorepo with two independent packages:
 
 - **`yaltaphil-frontend/`** — Vue 3 + TypeScript single-page app, built by Vite, styled with Tailwind CSS
-- **`yaltaphil-backend/`** — NestJS 10 + Mongoose 8 API with a small server-rendered debug page
+- **`yaltaphil-backend/`** — NestJS 12 + Mongoose 9 API with a small server-rendered debug page
 - **Purpose**: portfolio/resume site for a frontend developer (projects, tech stack, certificates, contacts)
 
 The two packages do **not** talk to each other: the frontend makes zero network requests (no
@@ -38,6 +38,11 @@ npm run start:dev        # ts-node src/main.ts — plain run, no watch: restart 
 npm run build            # tsc -p tsconfig.json → dist/
 npm start                # node dist/main
 ```
+
+TypeScript is pinned to the 5.x line on purpose: `ts-node@10` cannot load TypeScript 7 (the native
+port), and `start:dev` dies in `readConfig` with `Cannot read properties of undefined (reading
+'fileExists')` before `main.ts` runs. `npm run build` compiles this codebase under TS 7 without
+errors and still emits `design:paramtypes`, so the constraint is the dev runner, not the compiler.
 
 Requires `yaltaphil-backend/.env`, which is read from `process.cwd()` — run the scripts from
 `yaltaphil-backend/`, not from the repo root:
@@ -134,9 +139,16 @@ why generated icons use a simplified vector "Y" monogram rather than the real lo
 ### Backend
 
 NestJS modular monolith under `yaltaphil-backend/src/`: `main.ts` (startup config checks, bootstrap,
-`enableCors()`, urlencoded body parser), `app.module.ts` (`ConfigModule` + `MongooseModule`), and a
-single feature module `users/` (`user.schema.ts`, `users.module.ts`, `users.controller.ts`,
-`users.service.ts`).
+`enableCors()`, urlencoded body parser, `WsAdapter`), `app.module.ts` (`ConfigModule` +
+`MongooseModule`), and two feature modules — `users/` (`user.schema.ts`, `users.module.ts`,
+`users.controller.ts`, `users.service.ts`) and `messages/` (`message.schema.ts`,
+`messages.module.ts`, `messages.controller.ts`, `messages.service.ts`, `messages.gateway.ts`,
+`dto/`).
+
+The chat gateway shares the HTTP port rather than opening its own: `WsAdapter` is handed
+`app.getUnderlyingHttpServer()` and dispatches upgrades by path, so the socket lives on
+`ws://localhost:<PORT>/ws`. It does not support namespaces or rooms — `@nestjs/platform-socket.io`
+is the adapter to reach for if messages ever get split into subscribable rooms.
 
 The order inside `app.module.ts`'s `imports` array is load-bearing, not cosmetic:
 `ConfigModule.forRoot()` is what pushes `.env` into `process.env`, and it only does that before
@@ -155,9 +167,23 @@ right in the same array literal. Reorder them and `MONGO_URI` is `undefined` at 
 | `GET /users/:id` · `PATCH /users/:id` · `DELETE /users/:id` | Single-user read / update / delete (204) |
 | `POST /result` | Legacy HTML `<ol>` search results |
 
-Data model: `User { name, role }`; collection `users` (Mongoose default pluralization). The whole
-thing is still a development prototype — no auth, no tests, and no request validation: the config
-checks in `main.ts` are the only validation in the package.
+`MessagesController` is mounted at `/messages`; every mutation is broadcast to all connected socket
+clients as a JSON frame `{ event, data }` — the wire format of `@nestjs/platform-ws`, readable by a
+plain browser `WebSocket` with no client library. Events: `ready` on connect, then `message:new`,
+`message:updated`, `message:deleted` (payload is `{ id }`).
+
+| Route | Purpose |
+|---|---|
+| `POST /messages` | Create `{ text, author? }` (201) |
+| `GET /messages` | All messages sorted by `createdAt` ascending — no pagination, no filter |
+| `GET /messages/:id` · `PATCH /messages/:id` · `DELETE /messages/:id` | Single-message read / update / delete (204), 404 when the id is unknown |
+
+Data model: `User { name, role }` and `Message { text, author }` (with `timestamps: true`);
+collections `users` and `messages` (Mongoose default pluralization). Updates go through
+`findByIdAndUpdate(…, { returnDocument: 'after' })` — Mongoose 9 deprecated the `{ new: true }`
+spelling that `users.service.ts` still uses. The whole thing is still a development prototype — no
+auth, no tests, and no request validation: the config checks in `main.ts` are the only validation
+in the package.
 
 ## Key Files & Locations
 
@@ -191,7 +217,8 @@ yaltaphil-site/
     ├── tsconfig.json
     └── src/
         ├── main.ts · app.module.ts
-        └── users/                    # schema, module, controller, service
+        ├── users/                    # schema, module, controller, service
+        └── messages/                 # schema, module, controller, service, gateway, dto/
 ```
 
 ## Common Tasks
